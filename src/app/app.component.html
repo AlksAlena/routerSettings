@@ -1,1 +1,74 @@
-<h1>Router</h1>
+<mat-tab-group>
+  <mat-tab label="RAW">
+    <h1>Конфигурация роутера:</h1>
+    <form class="settings--form">
+      <ng-container *ngIf="tmpConfig; then configForm; else emptyConfig"></ng-container>
+    </form>  
+  </mat-tab>
+  <mat-tab label="WEB">
+    <h1>Настройка роутера:</h1>
+    <form class="settings--form" (ngSubmit)="onSubmit()">
+      <ng-container *ngIf="tmpConfig; then configForm; else emptyConfig"></ng-container>
+      <button type="submit" mat-flat-button color="primary">
+        Submit
+      </button>
+    </form>    
+  </mat-tab>
+</mat-tab-group>
+
+<ng-template #emptyConfig>
+  Файл конфигурации роутера не найден
+</ng-template>
+
+<!-- Содержимое формы вынесено в ng-template, чтобы не дублировать код во вкладках -->
+<ng-template #configForm>
+  <p>
+    <mat-form-field class="field--full__width">
+      <mat-label>SSID: </mat-label>
+      <input matInput name="ssid" 
+      [(ngModel)]="tmpConfig.SSID"
+      placeholder="MyNetwork325"
+      required>
+    </mat-form-field>
+  </p>
+  <p>
+    <mat-form-field class="field--full__width">
+      <mat-label>Пароль Wi-Fi: </mat-label>
+      <input matInput name="password" 
+      [(ngModel)]="tmpConfig.WPAKey"
+      placeholder="secretpass789"
+      minlength="8"
+      maxlength="63">
+    </mat-form-field>
+  </p>
+  <p>
+    <mat-form-field class="field--full__width">
+      <mat-label>Ширина канала, МГц: </mat-label>
+      <mat-select [(value)]="tmpConfig.ChannelBonding" #channelBonding>
+        <mat-option [value]="value" *ngFor="let value of availableChannelBonding">
+          {{value}}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+  </p>
+  <p *ngIf="(channelBonding.value != 5) && (channelBonding.value != 10)">
+    <mat-checkbox name="extendedChannel" [(ngModel)]="tmpConfig.ExtendedChannel" #extendedChannel>
+      Расширенные каналы
+    </mat-checkbox>
+  </p>
+  <p>
+    <mat-checkbox name="useChannelLimit" [(ngModel)]="tmpConfig.UseChannelLimit">
+      Использование списка разрешённых каналов
+    </mat-checkbox>
+  </p>
+  <p *ngIf="tmpConfig.UseChannelLimit">
+    <mat-form-field class="field--full__width">
+      <mat-label>Список разрешённых каналов: </mat-label>
+      <mat-select [(ngModel)]="channelLimit" multiple>
+        <mat-option [value]="value" *ngFor="let value of availableChannelLimit">
+          {{value}}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+  </p>
+</ng-template>
