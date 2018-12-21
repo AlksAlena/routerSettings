@@ -1,34 +1,51 @@
 <mat-tab-group>
   <mat-tab label="RAW">
     <h1>Конфигурация роутера:</h1>
-    <form class="settings--form">
+    <form class="settings--form" novalidate>
       <ng-container *ngIf="tmpConfig; then configForm; else emptyConfig"></ng-container>
     </form>  
   </mat-tab>
   <mat-tab label="WEB">
     <h1>Настройка роутера:</h1>
-    <form class="settings--form" (ngSubmit)="onSubmit()">
+    <h4 *ngIf="!isValidForm">
+      Изменения не были сохранены. Пожалуйста, проверьте заполнение формы
+    </h4>
+    <form [hidden]="isSubmitForm && isValidForm" 
+          class="settings--form" 
+          (ngSubmit)="onSubmit()" 
+          novalidate 
+          #webConfigForm="ngForm">
       <ng-container *ngIf="tmpConfig; then configForm; else emptyConfig"></ng-container>
       <button type="submit" mat-flat-button color="primary">
-        Submit
+        Сохранить
       </button>
-    </form>    
-  </mat-tab>
+    </form> 
+
+    <div *ngIf="isSubmitForm && isValidForm">
+      <mat-spinner></mat-spinner>
+    </div> 
+  </mat-tab>  
 </mat-tab-group>
 
 <ng-template #emptyConfig>
   Файл конфигурации роутера не найден
 </ng-template>
 
-<!-- Содержимое формы вынесено в ng-template, чтобы не дублировать код во вкладках -->
+<!-- Common fields of the config form -->
 <ng-template #configForm>
   <p>
     <mat-form-field class="field--full__width">
       <mat-label>SSID: </mat-label>
       <input matInput name="ssid" 
+      type="text" 
       [(ngModel)]="tmpConfig.SSID"
       placeholder="MyNetwork325"
+      #ssid="ngModel"
       required>
+      <mat-error *ngIf="ssid.errors?.required">SSID обязательное поле</mat-error>
+      <!--  -->
+      <!-- <div *ngIf="ssid.invalid && (ssid.dirty || ssid.touched)"></div> -->
+      <!--  -->
     </mat-form-field>
   </p>
   <p>
@@ -36,15 +53,19 @@
       <mat-label>Пароль Wi-Fi: </mat-label>
       <input matInput name="password" 
       [(ngModel)]="tmpConfig.WPAKey"
+      #password="ngModel"
       placeholder="secretpass789"
       minlength="8"
       maxlength="63">
+      <mat-error *ngIf="password.errors?.minlength">Пароль должен быть не менее 8 символов</mat-error>
     </mat-form-field>
   </p>
   <p>
     <mat-form-field class="field--full__width">
       <mat-label>Ширина канала, МГц: </mat-label>
-      <mat-select [(value)]="tmpConfig.ChannelBonding" #channelBonding>
+      <mat-select [(value)]="tmpConfig.ChannelBonding" 
+                  #channelBonding
+                  (selectionChange)="getAvailableRange()">
         <mat-option [value]="value" *ngFor="let value of availableChannelBonding">
           {{value}}
         </mat-option>
@@ -52,7 +73,10 @@
     </mat-form-field>
   </p>
   <p *ngIf="(channelBonding.value != 5) && (channelBonding.value != 10)">
-    <mat-checkbox name="extendedChannel" [(ngModel)]="tmpConfig.ExtendedChannel" #extendedChannel>
+    <mat-checkbox name="extendedChannel" 
+                  [(ngModel)]="tmpConfig.ExtendedChannel" 
+                  #extendedChannel
+                  (change)="getAvailableRange()">
       Расширенные каналы
     </mat-checkbox>
   </p>

@@ -29,14 +29,27 @@ export class ConfigService {
     return routerConfig;
   }
 
-  getAvailableChannelBonding() {
+  getAvailableChannelBonding(): Array<number> {
     return AVAILABLE_CHANNEL_BONDINGS;
   }
 
-  isValidForm(config: Config): boolean {
-    let ranges: Array<number> = RANGE_CHANNEL_LIMITS[`limitBond${config.ChannelBonding}`];
-    console.log(`ranges for bond: ${config.ChannelBonding}`);
-    console.log('ranges: ', ranges);
+  getAvailableChannelLimit(config: Config): Array<number> {
+    let bond = config.ChannelBonding;
+    let extend = config.ExtendedChannel;
+    let result;
+    if (bond != 5 && bond != 10) {
+      result = RANGE_CHANNEL_LIMITS[`limitBond_${bond}_${extend}`];
+    } else {
+      result = RANGE_CHANNEL_LIMITS[`limitBond_${bond}`];
+    }
+    return result;
+  }
+
+  validationForm(config: Config): boolean {
+    if (!config.SSID) return false;
+    if (config.WPAKey) {
+      if (config.WPAKey.length < 8 || config.WPAKey.length > 63) return false;
+    }
     return true;
   }
 
