@@ -1,0 +1,91 @@
+<h4 *ngIf="!isValidForm">
+  Изменения не были сохранены.<br>
+  Пожалуйста, проверьте заполнение обязательных полей формы
+</h4>
+
+<ng-container *ngIf="tmpConfig">
+  <form [hidden]="isSubmitForm && isValidForm"
+        class="config"
+        (ngSubmit)="onSubmit()"
+        novalidate
+        #webConfigForm="ngForm">
+    <p>
+      <mat-form-field class="full-width">
+        <mat-label>SSID: </mat-label>
+        <input matInput name="ssid"
+        type="text"
+        [(ngModel)]="tmpConfig.SSID"
+        placeholder="MyNetwork325"
+        #ssid="ngModel"
+        required>
+        <mat-error *ngIf="ssid.errors?.required">SSID обязательное поле</mat-error>
+      </mat-form-field>
+    </p>
+    <p>
+      <mat-form-field class="full-width">
+        <mat-label>Пароль Wi-Fi: </mat-label>
+        <input matInput name="password"
+        [(ngModel)]="tmpConfig.WPAKey"
+        #password="ngModel"
+        placeholder="secretpass789"
+        minlength="8"
+        maxlength="63"
+        required>
+        <mat-error *ngIf="password.errors?.required">Пароль обязательное поле</mat-error>
+        <mat-error *ngIf="password.errors?.minlength">Пароль должен быть не менее 8 символов</mat-error>
+      </mat-form-field>
+    </p>
+    <p>
+      <mat-form-field class="full-width">
+        <mat-label>Ширина канала, МГц: </mat-label>
+        <mat-select [(value)]="tmpConfig.ChannelBonding"
+                    name="channelBonding"
+                    #channelBonding
+                    (selectionChange)="getAvailableRange()">
+          <mat-option [value]="value" *ngFor="let value of availableChannelBonding">
+            {{value}}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+    </p>
+    <p *ngIf="(channelBonding.value != 5) && (channelBonding.value != 10)">
+      <mat-checkbox [(ngModel)]="tmpConfig.ExtendedChannel"
+                    name="extendedChannel"
+                    #extendedChannel
+                    (change)="getAvailableRange()">
+        Расширенные каналы
+      </mat-checkbox>
+    </p>
+    <p>
+      <mat-checkbox name="useChannelLimit" [(ngModel)]="tmpConfig.UseChannelLimit">
+        Использование списка разрешённых каналов
+      </mat-checkbox>
+    </p>
+    <p *ngIf="tmpConfig.UseChannelLimit">
+      <mat-form-field class="full-width">
+        <mat-label>Список разрешённых каналов: </mat-label>
+        <mat-select [(ngModel)]="channelLimit" multiple name="channelLimit">
+          <mat-option [value]="value" *ngFor="let value of availableChannelLimit">
+            {{value}}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+    </p>
+
+    <p *ngIf="tmpConfig.UseChannelLimit" style="color: rgba(0,0,0,.87); margin-bottom: 70px;">
+      <span *ngFor="let value of channelLimit; last as isLast">{{value}}<i *ngIf="!isLast">, </i></span>
+    </p>
+
+    <button type="submit" mat-flat-button color="primary">
+      Сохранить
+    </button>
+  </form>
+</ng-container>
+
+<div *ngIf="isSubmitForm && isValidForm">
+  <mat-spinner></mat-spinner>
+</div>
+
+<div *ngIf="!tmpConfig">
+  Файл конфигурации роутера не найден
+</div>
