@@ -1,0 +1,30 @@
+<ng-container *ngIf="((config$ | async) || config) as config">
+  <mat-list class="config" role="list" style="margin-left: -16px;">
+    <mat-list-item role="listitem">
+      <span class="label">SSID: </span>{{config.SSID}}
+    </mat-list-item>
+    <mat-list-item role="listitem">
+      <span class="label">Пароль Wi-Fi: </span>{{config.WPAKey}}
+    </mat-list-item>
+    <mat-list-item role="listitem">
+      <span class="label">Ширина канала: </span>{{config.ChannelBonding}} МГц
+    </mat-list-item>
+    <mat-list-item role="listitem">
+      <span class="label">Расширенные каналы: </span>{{config.ExtendedChannel}}
+    </mat-list-item>
+    <mat-list-item role="listitem">
+      <span class="label">Использование списка разрешённых каналов: </span>{{config.UseChannelLimit}}
+    </mat-list-item>
+    <mat-list-item role="listitem">
+      <span class="label">Список разрешённых каналов:</span>
+    </mat-list-item>
+  </mat-list>
+
+  <p class="config text">
+    <span *ngFor="let value of channelLimit; last as isLast">{{value}}<i *ngIf="!isLast">, </i></span>
+  </p>
+</ng-container>
+
+<div [hidden]="(config$ | async) || config">
+  Файл конфигурации роутера не найден
+</div>
