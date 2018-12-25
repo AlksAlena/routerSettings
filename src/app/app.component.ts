@@ -6,6 +6,7 @@ import { Subject } from 'rxjs';
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']
 })
+
 export class AppComponent implements OnInit {
   isChanged: Subject<boolean> = new Subject();
 
