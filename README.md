@@ -27,7 +27,7 @@ In the upper right corner of the screen there is a button 'clone or download', u
 
 ### In conclusion
 
-If installation Node and NPM was successful then navigate to the project directory on the local machine and at the command prompt, run the following command `npm init`. This command will install all the required packages depends on the project, this process may take several minutes. After the installation is complete, go to next step.
+If installation Node and NPM was successful then navigate to the project directory on the local machine and at the command prompt, run the following command `npm install`. This command will install all the required packages depends on the project, this process may take several minutes. After the installation is complete, go to next step.
 
 ## Development server
 
